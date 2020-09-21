@@ -1,0 +1,85 @@
+@charset "UTF-8";
+@import url("body-navbar.css");
+
+/* 아랫면 */
+.col-sm-4 {
+	margin-top: 10px;
+}
+
+.col-sm-8 {
+	margin-top: 10px;
+}
+
+.small-logo {
+	border-radius: 10px;
+	margin: 5px 5px;
+}
+
+.fa-cloud {
+	margin: 3px 3px;
+}
+
+.fa-ban {
+	margin: 3px 3px;
+}
+
+hr {
+	border-top: 3px double #bbb;
+}
+
+.info {
+	color: #C0C0C0;
+}
+
+.notice {
+	background-color: #337ab7;
+	color: white;
+	height: 41px;
+	margin: 1px auto;
+	border-radius: 6px;
+	border: 1px solid #e2e2e2;
+	box-shadow: 0 0 3px #888;
+}
+
+.notice p {
+	text-align: center;
+	margin-top: 8px;
+}
+
+.search-wrapper {
+	float:right;	
+}
+
+.search-wrapper select {
+	border-color:#D3D3D3;
+}
+
+.search-wrapper input {
+	border:solid 1px;
+	border-color:#D3D3D3;
+}
+
+.table {
+	margin-top: 10px;
+	background-color: white;
+	border-radius: 6px;
+	box-shadow: 0 0 3px #888;
+}
+
+.button-wrapper{
+	display:inline-block;
+	float:right;
+}
+
+.pagination {
+	margin: 1px;
+	float: right;
+	left: -33%;
+	position: relative;
+}
+
+.pagination li {
+	float: left;
+	left: 33%;
+	position: relative;
+}

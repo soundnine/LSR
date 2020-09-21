@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.portfolio.persistence.IUserMapper">
+
+<!-- <![CDATA[]]> -->
+	<resultMap type="UsersVO" id="usersResultMap">
+		<id property="userId" column="USERID"/>
+		<result property="password" column="PASSWORD"/>
+		<result property="userName" column="USERNAME"/>
+		<result property="gender" column="GENDER"/>
+		<result property="birthday" column="BIRTHDAY"/>
+		<result property="email" column="EMAIL"/>
+		<association property="attachVO" resultMap="userImgMap"></association>
+		<association property="channelVO" resultMap="channelMap"></association>
+	</resultMap>
+	
+	<resultMap type="AttachVO" id="userImgMap">
+		<id property="uuid" column="UUID"/>	
+		<result property="uploadPath" column="UPLOADPATH"/>
+		<result property="fileName" column="FILENAME"/>
+	</resultMap>
+	
+	<resultMap type="ChannelVO" id="channelMap">
+		<id property="channelName" column="CHANNELNAME"/>
+		<result property="channelOwner" column="CHANNELOWNER"/>	
+		<result property="followNum" column="FOLLOW_NUM"/>
+	</resultMap>
+	
+	<!-- Attach -> 프로필이미지, my채널 back이미지 --> 
+	<select id="login" resultMap="usersResultMap">
+		<![CDATA[
+					SELECT USERS.USERID
+					      ,USERS.PASSWORD
+					      ,USERS.USERNAME
+					      ,USERS.GENDER
+					      ,USERS.BIRTHDAY
+					      ,USERS.EMAIL
+					      ,ATTACH.UUID
+					      ,ATTACH.UPLOADPATH
+					      ,ATTACH.FILENAME
+					      ,CHANNEL.CHANNELNAME
+					      ,CHANNEL.CHANNELOWNER
+					      ,CHANNEL.FOLLOW_NUM
+				      FROM USERS
+		   LEFT OUTER JOIN ATTACH 
+						ON USERS.USERID = ATTACH.USERID
+		   LEFT OUTER JOIN CHANNEL
+						ON USERS.USERID = CHANNEL.CHANNELOWNER
+					 WHERE USERS.USERID = #{userId}
+		]]>
+	</select>
+	
+	<select id="getUserInfo" parameterType="UsersVO" resultType="UsersVO">
+		<![CDATA[
+					SELECT EMAIL
+						  ,PASSWORD
+					  FROM USERS
+					 WHERE USERID = #{userId}
+		]]>
+	</select>
+	
+	<insert id="register">
+		<![CDATA[
+					INSERT INTO USERS
+							   (
+							    USERID
+							   ,PASSWORD
+							   ,USERNAME
+							   ,GENDER
+							   ,BIRTHDAY
+							   ,EMAIL
+							   )
+						 VALUES
+						 	   (
+						 	    #{userId}
+						 	   ,#{password}
+						 	   ,#{userName}
+						 	   ,#{gender}
+						 	   ,#{birthday}
+						 	   ,#{email}
+						 	   )	   
+		]]>
+	</insert>
+	
+	<insert id="updateUserInfo" parameterType="UsersVO">
+		<![CDATA[
+					INSERT INTO USERS
+					           (
+					            EMAIL
+		]]>
+		                    <if test="PASSWORD != null">
+		                        PASSWORD
+		                   </if>
+		<![CDATA[ 
+							   )
+						 VALUES
+						       (
+						        #{email}
+		]]>				        
+							<if test="PASSWORD != null">
+		                        #{password}
+		                   </if>
+		<![CDATA[				        
+						       )	   
+		]]>                 
+	</insert>
+</mapper>

@@ -1,0 +1,80 @@
+@charset "UTF-8";
+
+/* nanum-gothic-700 - latin_korean */
+@font-face {
+	font-family: 'Nanum Gothic';
+	font-style: normal;
+	font-weight: 700;
+	src: url('../fonts/nanum-gothic-v17-latin_korean-700.eot');
+	/* IE9 Compat Modes */
+	src: local('NanumGothic Bold'), local('NanumGothic-Bold'),
+		url('../fonts/nanum-gothic-v17-latin_korean-700.eot?#iefix')
+		format('embedded-opentype'), /* IE6-IE8 */
+       url('../fonts/nanum-gothic-v17-latin_korean-700.woff2')
+		format('woff2'), /* Super Modern Browsers */
+       url('../fonts/nanum-gothic-v17-latin_korean-700.woff')
+		format('woff'), /* Modern Browsers */
+       url('../fonts/nanum-gothic-v17-latin_korean-700.ttf')
+		format('truetype'), /* Safari, Android, iOS */ 
+       
+		 url('../fonts/nanum-gothic-v17-latin_korean-700.svg#NanumGothic')
+		format('svg'); /* Legacy iOS */
+}
+
+body {
+	font-family:Nanum Gothic;
+	background-color:#F8F8F8;
+	padding-top:70px;
+}
+@media(max-width:768px){
+	body{
+		padding-top:110px;
+	}
+}
+/* 네비 메뉴 */
+.top {
+	background-color:white;
+	border:solid 1px;
+	border-width:0 0 1px;
+	border-color:#D3D3D3;
+	top:0;
+  	left:0;
+  	right:0;
+	z-index:1030;
+	padding-right:10px;
+    padding-left:10px;
+ 	position:fixed;
+}
+
+@media(max-width:768px){
+	.top{
+  	left:0;
+  	right:0;
+	}
+	.image-wrapper{
+		text-align:center;
+	}
+}
+
+@media(min-width:768px){
+	.links {
+		margin-top:23px;
+		margin-right:10px;
+		float:right;
+	}
+	
+	.links a {
+		margin:auto 7px;
+	} 
+}
+@media(max-width:768px){
+	.links{
+		width:80%;
+		margin:8px auto;
+		text-align:center;
+	}
+	
+	.links a {
+		margin:auto 7px;
+	} 
+}

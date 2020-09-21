@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.portfolio.persistence.IChannelMapper">
+
+<!-- <![CDATA[]]> -->
+
+<resultMap type="ChannelVO" id="channelResultMap">
+	<id property="channelName" column="CHANNELNAME"/>
+	<result property="channelOwner" column="CHANNELOWNER"/>
+	<result property="followNum" column="FOLLOW_NUM"/>
+	<association property="attachVO" resultMap="channelImgMap"></association>
+</resultMap>
+
+<resultMap type="AttachVO" id="channelImgMap">
+	<id property="uuid" column="UUID"/>
+	<result property="uploadPath" column="UPLOADPATH"/>
+	<result property="fileName" column="FILENAME"/>
+</resultMap>
+
+
+	<select id="getChannelAndList" resultMap="channelResultMap" parameterType="String">
+		<![CDATA[
+					SELECT A.CHANNELNAME
+					      ,A.CHANNELOWNER
+					      ,A.FOLLOW_NUM
+					      ,B.UPLOADPATH
+					      ,B.UUID
+					      ,B.FILENAME
+				      FROM CHANNEL A
+		   LEFT OUTER JOIN ATTACH B 
+                        ON A.CHANNELNAME = B.CHANNELNAME
+                     
+		]]>
+				  	   <if test="value!=null">
+				  	 WHERE A.CHANNELNAME = #{value}
+				      </if>
+				  	 <!-- String -> getter x, 단일파라미터 value로 치환,String = "";은 null과 빈 문자열 조건을 모두 통과해버린다.-->
+	</select>
+	
+	<select id="getChannelCountById" resultType="int">
+	 	<![CDATA[
+	 				SELECT COUNT(CHANNELNAME)
+	 				  FROM CHANNEL
+	 				 WHERE CHANNELOWNER = #{userId}
+	 	]]>
+	</select>
+	
+	<!-- <select id="getChannel" resultType="ChannelVO">
+		<![CDATA[
+					SELECT CHANNELNAME
+						  ,CHANNELOWNER
+						  ,FOLLOW_NUM
+					  FROM CHANNEL
+					 WHERE CHANNELNAME = #{channelName}   
+		]]>
+	</select> -->
+	
+	<select id="getAllFeeds" resultType="FeedVO">
+		<![CDATA[
+					SELECT IDX
+					      ,WRITER
+					      ,CONTENT
+					      ,UPDATEDATE
+					      ,LIKES
+					      ,LIKEUSER
+					  FROM FEED
+					 WHERE WRITER = #{channelOwner}
+				  ORDER BY IDX DESC     
+		]]>
+	</select>
+	
+	<select id="getWhetherFollow" resultType="int">
+		<![CDATA[
+					SELECT COUNT(USERID)
+				 	  FROM FOLLOW
+					 WHERE CHANNELNAME = #{channelName}
+				 	   AND USERID = #{userId}
+		]]>
+	</select>
+
+	<select id="getFollowList" resultType="String">
+		<![CDATA[
+					SELECT CHANNELNAME
+					  FROM FOLLOW
+					 WHERE USERID = #{userId}
+		]]>	
+	</select>
+	
+	<insert id="insertChannel">
+		<![CDATA[
+					INSERT INTO CHANNEL
+					           (
+					            CHANNELNAME
+					           ,CHANNELOWNER
+					           )
+					     VALUES   
+					           (
+					            #{channelName}
+					           ,#{channelOwner}
+					           ) 
+		]]>
+	</insert>
+	
+	<insert id="insertFeed">
+		<![CDATA[
+					INSERT INTO FEED
+					           (
+					            IDX
+					           ,WRITER
+					           ,CONTENT
+					           )
+					     VALUES
+					           (
+					            SEQ_FEED.NEXTVAL
+					           ,#{writer}
+					           ,#{content}
+					           )     
+		]]>
+					 <selectKey resultType="int" keyProperty="idx" order="AFTER">
+					  	 SELECT SEQ_FEED.CURRVAL
+						   FROM DUAL
+				    </selectKey>
+		
+	</insert>
+	
+	<insert id="insertFollow">
+		<![CDATA[
+					INSERT INTO FOLLOW
+							   (
+							   CHANNELNAME
+							  ,USERID
+							   )
+						 VALUES
+						       (
+						       #{channelName}
+						      ,#{userId}
+						       )	   
+		]]>
+	</insert>
+	
+	<update id="updateFollowCount">
+		<![CDATA[
+					UPDATE CHANNEL
+					   SET FOLLOW_NUM = 
+		]]>
+				   <choose>
+					 <when test="followUnfollow == 'follow'.toString()">
+							            FOLLOW_NUM + 1
+					</when>
+					 <when test="followUnfollow == 'unFollow'.toString()">
+						 				FOLLOW_NUM - 1
+					</when>
+				  </choose>
+		<![CDATA[
+				 	 WHERE CHANNELNAME = #{channelName}
+		]]>	  
+	</update>
+	
+	<delete id="deleteFollow">
+		<![CDATA[
+					DELETE 
+					  FROM FOLLOW
+					 WHERE CHANNELNAME = #{channelName}
+					   AND USERID = #{userId}
+					  
+		]]>
+	</delete>
+</mapper>

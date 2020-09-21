@@ -1,0 +1,133 @@
+@charset "UTF-8";
+@import url("body-navbar.css");
+
+/* 아랫면 */
+.col-sm-4 {
+	margin-top: 10px;
+}
+
+.col-sm-8 {
+	margin-top: 10px;
+	padding:12px;
+	height:1000px;
+	background-color:white;
+	border:solid 1px;
+	border-color:#D3D3D3;
+	border-radius:6px;
+}
+
+.small-logo {
+	border-radius: 10px;
+	margin: 5px 5px;
+}
+
+.fa-cloud {
+	margin: 3px 3px;
+}
+
+.fa-ban {
+	margin: 3px 3px;
+}
+
+hr {
+	border-top: 3px double #bbb;
+}
+/* about us 들어간 곳 */
+.info {
+	color: #C0C0C0;
+}
+.wrapper{
+	width:95%;
+}
+
+.wrapper h4{
+	display: inline-block;
+	width: 40%;
+	margin: 2px auto;	
+}
+
+form{
+	height:100%;
+}
+.title{
+	height:9%;
+	margin:4px;
+	padding:20px;
+	border:solid 1px;
+	border-color:#D3D3D3;	
+}
+.title div{
+	width:80%;
+	height:55%;	
+	margin:2px;
+}
+
+.writer{
+	height:9%;
+	margin:4px;
+	padding:20px;
+	border:solid 1px;
+	border-color:#D3D3D3;
+}
+
+.writer div{
+	width:80%;
+	height:55%;	
+	margin:2px;
+}
+
+.date{
+	height:9%;
+	margin:4px;
+	padding:20px;
+	border:solid 1px;
+	border-color:#D3D3D3;
+}
+
+.date div{
+	width:80%;
+	height:55%;	
+	margin:2px;
+}
+
+.content{
+	height:45%;	
+	margin:4px;
+	padding:20px;
+	border:solid 1px;
+	border-color:#D3D3D3;
+}
+
+.content div{
+	width:98%;
+	height:92%;
+	margin:2px;
+	word-break:break-all; 
+	overflow-y:scroll; 
+}
+.content textarea{
+	height:95%;
+}
+
+.attach{
+	height:20%;
+	margin:4px;
+	padding:14px;
+	border:solid 1px;
+	border-color:#D3D3D3;
+	width:98.7%;
+}
+
+.button-wrapper{
+	margin:4px;
+	text-align:right;
+}
+
+.button-wrapper button{
+	margin-left:3px;
+	margin-right:3px;	
+}
+
+.button-wrapper input{
+	margin:4px 2px 0px;
+}

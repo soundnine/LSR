@@ -1,0 +1,83 @@
+@charset "UTF-8";
+@import url("body-navbar.css");
+
+/* 아랫면 */
+.col-sm-4 {
+	margin-top: 10px;
+}
+
+.col-sm-8 {
+	margin-top: 10px;
+}
+
+.small-logo {
+	border-radius: 10px;
+	margin: 5px 5px;
+}
+
+.fa-cloud {
+	margin: 3px 3px;
+}
+
+.fa-ban {
+	margin: 3px 3px;
+}
+
+hr {
+	border-top: 3px double #bbb;
+}
+
+.info {
+	color: #C0C0C0;
+}
+
+.channel-lists {
+	margin-top: -10px;
+}
+
+.small-user-image {
+	width: 20px;
+	height: 20px;
+	margin-right: 2px;
+}
+
+span {
+	display: inline-block;
+	margin: 0px 10px;
+}
+
+.ch-form {
+	border: solid 1px;
+	border-color: #D3D3D3;
+	border-radius: 6px;
+	background-color: white;
+	position: relative;
+}
+
+.ch-form form {
+	margin-bottom: 2px;
+}
+
+.ch-form ul {
+	margin-bottom: 4px;
+}
+
+.ch-form li {
+	background-color: #337ab7;
+}
+
+.ch-form div {
+	padding: 2px;
+	margin: 4px 4px;
+}
+
+.ch-form input[type="text"] {
+	width: 70%;
+}
+
+.ch-form button {
+	width:50px;
+	bottom: 10px;
+	right: 6px;
+}
+

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.portfolio.persistence.IFreeMapper">
+
+<!-- <![CDATA[]]> -->
+
+	<select id="getFreeBoard" resultType="FreeBoardVO">
+		<![CDATA[
+					SELECT IDX
+						  ,TITLE
+						  ,CONTENT
+						  ,WRITER
+						  ,UPDATEDATE
+						  ,COUNTS
+						  ,LOCKING
+						  ,LOCKINGPASSWORD
+						  ,LIKES
+						  ,PARENT_IDX
+					  FROM FREE_BOARD
+					 WHERE IDX = #{idx}	   
+		]]>
+	</select>
+	<!-- 계층형 쿼리로 데이터 뽑은 다음에 인덱스로 역순 정렬. 그 후 정순 로우넘버와 역순 로우넘버 추가해서 정순은 페이징 역순은 수정,삭제 반영할수 있는 게시글 번호로 대체함. vo필드 추가해서 스칼라 서브쿼리 추가-->
+	<select id="getFreeBoardList" resultType="FreeBoardVO">
+		<![CDATA[
+					SELECT RN
+					      ,IDX
+					      ,TITLE
+					      ,WRITER
+					      ,UPDATEDATE
+					      ,COUNTS
+					      ,LOCKING
+					      ,(SELECT COUNT(FB.IDX) AC
+					      	  FROM FREE_BOARD FB
+					    INNER JOIN ATTACH A
+					            ON FB.IDX = A.FREE_BOARD_IDX 
+					         WHERE FB.IDX = T.IDX
+					      GROUP BY FB.IDX)                   ATTACHCOUNT
+					      ,(SELECT COUNT(FB2.IDX) RC
+					      	  FROM FREE_BOARD FB2
+					    INNER JOIN REPLY R 
+					            ON FB2.IDX = R.FREE_BOARD_IDX 
+					         WHERE FB2.IDX = T.IDX
+					      GROUP BY FB2.IDX)                  REPLYCOUNT
+					  FROM
+						  (SELECT ROW_NUMBER() OVER(ORDER BY RNUM DESC)RN
+						  	     ,RNUM
+						         ,IDX
+						         ,TITLE
+						         ,WRITER
+						         ,UPDATEDATE
+						         ,COUNTS
+						         ,LOCKING
+						     FROM
+						         (SELECT ROWNUM RNUM
+						                ,IDX
+						                ,TITLE
+						                ,WRITER
+						                ,UPDATEDATE
+						                ,COUNTS
+						                ,LOCKING 
+						            FROM FREE_BOARD
+						           WHERE 
+	    ]]>
+						        <choose>
+								   <when test="type == 'T'.toString()">
+										 UPPER(TITLE) LIKE UPPER('%'||#{keyword}||'%')
+								  </when>
+								   <when test="type == 'W'.toString()">
+										 UPPER(WRITER) LIKE UPPER('%'||#{keyword}||'%')
+								  </when>
+								   <when test="type == 'C'.toString()">
+										 UPPER(CONTENT) LIKE UPPER('%'||#{keyword}||'%')
+								  </when>
+								   <when test="type == 'TC'.toString()">
+										 UPPER(TITLE) LIKE UPPER('%'||#{keyword}||'%') OR UPPER(CONTENT) LIKE UPPER('%'||#{keyword}||'%')
+								  </when>
+							  <otherwise>
+										 UPPER(TITLE) LIKE UPPER'('%'||#{keyword}||'%')
+							 </otherwise>
+							    </choose>
+	    <![CDATA[
+						      START WITH PARENT_IDX IS NULL
+						CONNECT BY PRIOR IDX = PARENT_IDX
+					   ORDER SIBLINGS BY IDX DESC)
+						  ORDER BY RN DESC) T
+					 WHERE RNUM BETWEEN ((#{page}-1)*10+1) and (#{page}*10)
+		]]>
+	</select>
+	
+	<select id="getTitle" resultType="string">
+		<![CDATA[
+					SELECT TITLE
+					  FROM FREE_BOARD
+					 WHERE IDX = #{idx}
+ 		]]>
+	</select>
+	
+	<select id="getLikesCounts" resultType="int">
+		<![CDATA[
+					SELECT LIKES
+					  FROM FREE_BOARD
+					 WHERE IDX = #{idx}  
+		]]>			
+	</select>
+	
+	<!-- 검색 시 선택옵션 넣기 -->
+	<select id="getTotal" resultType="int">
+		<![CDATA[
+					SELECT COUNT(*)
+					  FROM FREE_BOARD
+					 WHERE 
+		]]>			
+					<choose>
+						<when test="type == 'T'.toString()">
+						   UPPER(TITLE) LIKE UPPER('%'||#{keyword}||'%')
+						</when>
+						<when test="type == 'W'.toString()">
+						   UPPER(WRITER) LIKE UPPER('%'||#{keyword}||'%')
+						</when>
+						<when test="type == 'C'.toString()">
+						   UPPER(CONTENT) LIKE UPPER('%'||#{keyword}||'%')
+						</when>
+						<when test="type == 'TC'.toString()">
+						   UPPER(TITLE) LIKE UPPER('%'||#{keyword}||'%') OR UPPER(CONTENT) LIKE UPPER('%'||#{keyword}||'%')
+						</when>
+						<otherwise>
+						   UPPER(TITLE) LIKE UPPER('%'||#{keyword}||'%')
+						</otherwise>
+					</choose>
+	</select>
+	
+	<!-- 기본 글쓰기와 답변 쓰기 PARENT칼럼값에 따른 처리 -->
+	<insert id="insert">
+		<![CDATA[
+					INSERT INTO FREE_BOARD
+						 	   (
+						  		IDX
+						  	   ,TITLE
+						  	   ,CONTENT
+						  	   ,WRITER
+						  	   ,LOCKING
+						  	   ,LOCKINGPASSWORD
+		]]>
+							<if test="parentIdx != 0">
+							   ,PARENT_IDX
+							</if>
+		<![CDATA[				  	   
+							   )
+						 VALUES
+						       (
+						 		SEQ_FREE_BOARD.NEXTVAL
+						 	   ,#{title}
+						 	   ,#{content}
+						 	   ,#{writer}
+						 	   ,#{locking}
+						 	   ,#{lockingPassword}
+		]]>				 	   
+							<if test="parentIdx != 0">
+							   ,#{parentIdx}
+							</if>
+		<![CDATA[				 	   
+						       )
+		]]>
+					 <selectKey resultType="int" keyProperty="idx" order="AFTER">
+					  	 SELECT SEQ_FREE_BOARD.CURRVAL
+						   FROM DUAL
+				    </selectKey>
+		
+	</insert>
+	
+	<update id="update">
+		<![CDATA[
+					UPDATE FREE_BOARD
+					   SET TITLE = #{title}
+					   	  ,CONTENT = #{content}
+					   	  ,LOCKING = #{locking}
+					   	  ,LOCKINGPASSWORD = #{lockingPassword}
+					 WHERE IDX = #{idx} 	  
+		]]>
+	</update>
+	
+	<update id="updateAndGetCount" parameterType="FreeBoardVO">
+		<![CDATA[
+					UPDATE FREE_BOARD
+					   SET COUNTS = COUNTS + 1
+					 WHERE IDX = #{idx}
+		]]>
+				<selectKey resultType="int" keyProperty="counts" order="AFTER">
+ 					SELECT COUNTS
+ 					  FROM FREE_BOARD
+ 					 WHERE IDX = #{idx}
+				</selectKey>
+	</update>
+	
+	<delete id="delete">
+		<![CDATA[
+					DELETE 
+					  FROM FREE_BOARD
+					 WHERE IDX = #{idx}
+		]]>
+	</delete>
+	
+	
+</mapper>

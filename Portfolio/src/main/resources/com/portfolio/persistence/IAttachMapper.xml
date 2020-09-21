@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.portfolio.persistence.IAttachMapper">
+
+<!-- <![CDATA[]]> -->
+       <!-- 메인 피드 재활용 여부 -->
+	<select id="getAttachList" resultType="AttachVO">
+		<![CDATA[
+					SELECT UUID
+		]]>
+				   <choose>
+					 <when test="type == 'freeBoard'.toString()">
+					      ,FREE_BOARD_IDX
+					</when>
+					 <when test="type == 'feed'.toString()">
+					      ,FEED_IDX
+					</when>
+				  </choose>
+		<![CDATA[
+						  ,UPLOADPATH
+						  ,FILENAME
+						  ,FILESIZE
+					  FROM ATTACH
+					 WHERE 
+		]]>			
+				   <choose>
+					 <when test="type == 'freeBoard'.toString()">
+					       FREE_BOARD_IDX = #{idx}
+					</when>
+					 <when test="type == 'feed'.toString()">
+					       FEED_IDX = #{idx}	
+					</when>
+				  </choose>
+	</select>
+	<!-- 피드이미지용 -->
+	<select id="getAllFeedAttachList" parameterType="java.util.List" resultType="AttachVO">
+		<![CDATA[
+					SELECT UUID
+						  ,UPLOADPATH
+						  ,FILENAME
+						  ,FEED_IDX
+					  FROM ATTACH
+				     WHERE FEED_IDX IN 	  
+		]]>
+				  
+			      <foreach collection="list" index="index" item="idx" open="(" close=")" separator=",">
+						   #{idx}
+				 </foreach>	
+				    
+	</select>
+	
+	<select id="countAttach" resultType="int">
+		<![CDATA[
+					SELECT COUNT(UUID)
+					  FROM ATTACH
+					 WHERE 
+		]]>			
+				   <choose>
+					 <when test="type == 'freeBoard'.toString()">
+					       FREE_BOARD_IDX = #{idx}
+					</when>
+					 <when test="type == 'feed'.toString()">
+					       FEED_IDX = #{idx}	
+					</when>
+				  </choose>
+	</select>
+	
+	<select id="getAllUuid" resultType="string">
+		<![CDATA[
+					SELECT UUID
+					  FROM ATTACH
+					 WHERE 
+		]]>			
+				   <choose>
+					 <when test="type == 'freeBoard'.toString()">
+					       FREE_BOARD_IDX = #{idx}
+				    </when>
+					 <when test="type == 'feed'.toString()">
+					       FEED_IDX = #{idx}	
+					</when>
+				  </choose>
+	</select>
+	
+	<select id="getLocalPathsByUuids" parameterType="java.util.List" resultType="AttachVO">
+		<![CDATA[
+					SELECT UPLOADPATH
+					      ,UUID
+					      ,FILENAME
+					  FROM ATTACH   
+					 WHERE UUID IN
+		]]>
+			  
+				  <foreach collection="list" index="index" item="uuidValue" open="(" close=")" separator=",">
+						   #{uuidValue}
+				 </foreach>
+	</select>
+	
+	<select id="getLocalPathsByIdx" resultType="AttachVO">
+		<![CDATA[
+					SELECT UPLOADPATH
+					      ,UUID
+					      ,FILENAME
+					  FROM ATTACH   
+					 WHERE 
+		]]>
+			  	  <choose>
+				    <when test="type == 'freeBoard'.toString()">
+					       FREE_BOARD_IDX = #{idx}
+				   </when>
+					<when test="type == 'feed'.toString()">
+					       FEED_IDX = #{idx}	
+				   </when>
+				 </choose>
+	</select>
+	
+	<select id="getLocalPathsByName" resultType="AttachVO">
+		<![CDATA[
+					SELECT UPLOADPATH
+					      ,UUID
+					      ,FILENAME
+		]]>	
+			      <choose>
+				    <when test="type == 'users'.toString()">
+					      ,USERID
+				   </when>
+					<when test="type == 'channel'.toString()">
+					      ,CHANNELNAME	
+				   </when>
+				 </choose>
+		<![CDATA[		      
+					  FROM ATTACH   
+					 WHERE 
+		]]>
+			  	  <choose>
+				    <when test="type == 'users'.toString()">
+					       USERID = #{name}
+				   </when>
+					<when test="type == 'channel'.toString()">
+					       CHANNELNAME = #{name}	
+				   </when>
+				 </choose>
+	</select>
+	
+	<insert id="insertAttach">
+		<![CDATA[
+					INSERT INTO ATTACH
+							   (
+								UUID
+		]]>
+						<choose>
+						  <when test="freeBoardIdx != 0">
+						       ,FREE_BOARD_IDX
+						 </when>
+						  <when test="feedIdx != 0">
+						       ,FEED_IDX
+						 </when>
+						 <when test="userId != null">
+						       ,USERID
+						 </when>
+						 <when test="channelName != null">
+						       ,CHANNELNAME
+						 </when>
+					   </choose>
+		<![CDATA[
+					           ,UPLOADPATH
+					           ,FILENAME
+					           ,FILETYPE
+					           ,FILESIZE
+					           )
+					     VALUES
+					           (
+					     		#{uuid}
+		]]>
+						<choose>
+						  <when test="freeBoardIdx != 0">
+						       ,#{freeBoardIdx}
+						 </when>
+						  <when test="feedIdx != 0">
+						       ,#{feedIdx}	
+						 </when>
+						 <when test="userId != null">
+						       ,#{userId}
+						 </when>
+						 <when test="channelName != null">
+						       ,#{channelName}
+						 </when>
+					   </choose>
+		<![CDATA[		
+					     	   ,#{uploadPath}
+					     	   ,#{fileName}
+					     	   ,#{fileType}
+					     	   ,#{fileSize}
+					   		   )
+		]]>
+	</insert>
+	
+	
+	<delete id="deleteAttachAll">
+		<![CDATA[
+					DELETE
+					  FROM ATTACH
+					 WHERE 
+		]]>			
+				   <choose>
+			         <when test="type == 'freeBoard'.toString()">
+					       FREE_BOARD_IDX = #{idx}
+				    </when>
+					 <when test="type == 'feed'.toString()">
+					       FEED_IDX = #{idx}	
+					</when>
+				  </choose>		
+	</delete>
+	
+	<delete id="deleteSelectedAttach" parameterType="java.util.List">
+		<![CDATA[
+					DELETE
+					  FROM ATTACH
+					 WHERE UUID IN
+		]]>			
+				  <foreach collection="list" index="index" item="uuidValue" open="(" close=")" separator=",">
+						   #{uuidValue}
+				 </foreach>	
+	</delete>
+	<!-- 프로필&배경이미지 -->
+	<delete id="deleteUserAndChImage">
+		<![CDATA[
+					DELETE
+				      FROM ATTACH
+				     WHERE
+		]]>
+			       <choose>
+			         <when test="type == 'users'.toString()">
+					       USERID = #{name}
+				    </when>
+					 <when test="type == 'channel'.toString()">
+					       CHANNELNAME = #{name}	
+					</when>
+				  </choose>		
+	</delete>
+	
+</mapper>

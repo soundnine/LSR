@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.portfolio.persistence.IReplyMapper">
+
+<!-- <![CDATA[]]> -->
+	<resultMap type="ReplyVO" id="replyResultMap">
+		<id property="idx" column="IDX"/>
+		<result property="freeBoardIdx" column="FREE_BOARD_IDX"/>
+		<result property="feedIdx" column="FEED_IDX"/>
+		<result property="reply" column="REPLY"/>
+		<result property="replyWriter" column="REPLYWRITER"/>
+		<result property="updateDate" column="UPDATEDATE"/>
+		<result property="alert" column="ALERT"/>
+		<association property="attachVO" resultMap="replyImgMap"></association>
+	</resultMap>
+	
+	<resultMap type="AttachVO" id="replyImgMap">
+		<id property="uuid" column="UUID"/>
+		<result property="uploadPath" column="UPLOADPATH"/>
+		<result property="fileName" column="FILENAME"/>
+	</resultMap> 
+	
+	
+	<select id="getReplyList" resultMap="replyResultMap">
+		<![CDATA[
+					SELECT IDX
+					      ,REPLY
+					      ,REPLYWRITER
+					      ,UPDATEDATE
+					      ,UPLOADPATH
+					      ,UUID
+					      ,FILENAME
+		]]>			      
+				   <choose>
+					 <when test="type == 'freeBoard'.toString()">
+					      ,FREE_BOARD_IDX
+					</when>
+					 <when test="type == 'feed'.toString()">
+					      ,FEED_IDX	
+					</when>
+				  </choose> 
+		<![CDATA[			      
+					  FROM
+					      (SELECT ROW_NUMBER() OVER(ORDER BY IDX DESC) RN
+					             ,A.IDX
+					             ,A.REPLY
+					             ,A.REPLYWRITER
+					             ,A.UPDATEDATE
+					             ,C.UPLOADPATH
+					             ,C.UUID
+					             ,C.FILENAME
+		]]>			             
+					      <choose>
+						    <when test="type == 'freeBoard'.toString()">
+							     ,A.FREE_BOARD_IDX
+						   </when>
+							<when test="type == 'feed'.toString()">
+							     ,A.FEED_IDX	
+						   </when>
+						 </choose>
+		<![CDATA[			             
+						     FROM REPLY A
+					   INNER JOIN USERS B  
+							   ON A.REPLYWRITER = B.USERID	
+				  LEFT OUTER JOIN ATTACH C
+				  			   ON B.USERID = C.USERID	   			   
+						    WHERE 
+		]]>				    
+						  <choose>
+					        <when test="type == 'freeBoard'.toString()">
+					       		  A.FREE_BOARD_IDX = #{boardIdx}
+					       </when>
+					        <when test="type == 'feed'.toString()">
+					              A.FEED_IDX = #{boardIdx}	
+					       </when>
+				         </choose> 
+		<![CDATA[				    
+					 )WHERE RN BETWEEN ((#{page}-1)*3+1) AND (#{page}*3)
+		]]>
+	</select>
+	
+	<select id="getReply" resultType="ReplyVO">
+		<![CDATA[
+					SELECT IDX
+						  ,REPLY
+						  ,REPLYWRITER
+						  ,UPDATEDATE
+				      FROM REPLY 
+				     WHERE IDX = #{replyIdx}
+		]]>
+	</select>
+	
+	<select id="getTotalCount" resultType="int">
+		<![CDATA[
+					SELECT COUNT(IDX)
+					  FROM REPLY
+					 WHERE
+		]]>
+				   <choose>
+			         <when test="type == 'freeBoard'.toString()">
+			       		  FREE_BOARD_IDX = #{boardIdx}
+			        </when>
+			         <when test="type == 'feed'.toString()">
+			              FEED_IDX = #{boardIdx}	
+			        </when>
+		          </choose>
+	</select>
+	
+	<insert id="insertReply">
+		<![CDATA[
+					INSERT INTO REPLY
+					           (
+					            IDX
+		]]>
+							 <choose>
+							   <when test = "freeBoardIdx != 0">
+							   ,FREE_BOARD_IDX
+							  </when>
+							   <when test = "feedIdx != 0" >
+							   ,FEED_IDX
+							  </when>
+							 </choose>
+		<![CDATA[			   
+							   ,REPLY
+							   ,REPLYWRITER          
+					           )
+						 VALUES
+						       (
+						        SEQ_REPLY.NEXTVAL
+		]]>
+							 <choose>
+							   <when test = "freeBoardIdx != 0">
+							   ,#{freeBoardIdx}
+							  </when>
+							   <when test = "feedIdx != 0" >
+							   ,#{feedIdx}
+							  </when>
+							</choose>
+		<![CDATA[				        
+						       ,#{reply}
+						       ,#{replyWriter}
+						       )
+		]]>
+	</insert>
+	
+	<update id="updateReply">
+		<![CDATA[
+					UPDATE REPLY
+					   SET REPLY = #{replyContent}
+					 WHERE IDX = #{replyIdx} 
+		]]>	
+	</update>
+	
+	<delete id="deleteReply">
+		<![CDATA[
+					DELETE 
+					  FROM REPLY
+					 WHERE IDX = #{replyIdx}
+		]]>
+	</delete>
+	
+	
+</mapper>

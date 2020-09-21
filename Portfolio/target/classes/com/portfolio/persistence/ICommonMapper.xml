@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.portfolio.persistence.ICommonMapper">
+
+<!-- <![CDATA[]]> -->
+
+	<select id="getLikeUserCount" resultType="int">
+		<![CDATA[
+					SELECT COUNT(IDX)
+					  FROM
+		]]>
+				   <choose>
+				  	 <when test="type == 'freeBoard'.toString()">
+				   			FREE_BOARD
+				  	</when>
+				  	 <when test="type == 'feed'.toString()">
+				   			FEED
+				    </when>
+				  </choose>
+		<![CDATA[
+					 WHERE LIKEUSER = #{accessId}
+					   AND IDX = #{idx}
+		]]>		  
+	</select>
+	
+	<select id="getAllIdxLikeFeeds" resultType="int">
+		<![CDATA[
+					SELECT IDX
+					  FROM FEED
+					 WHERE LIKEUSER = #{accessId}
+		]]>
+	</select>
+	
+	<select id="getPopularBoards" resultType="FreeBoardVO">
+		<![CDATA[
+					SELECT IDX
+					      ,TITLE
+				      FROM 
+				           (SELECT ROW_NUMBER() OVER(ORDER BY LIKES DESC) RN
+				                  ,IDX
+				                  ,TITLE
+				              FROM FREE_BOARD)
+					 WHERE RN BETWEEN 1 AND 3
+		]]>
+	</select>
+	<!-- 로그인한 유저가 팔로우한 채널의 피드 내용과 이미지, 채널 이미지 모두 가져오고 날짜는 7일이내로 한번 클릭할 때마다 3피드씩 -->
+	<select id="getNewFeeds" resultType="java.util.HashMap">
+		<![CDATA[
+					SELECT CHANNELNAME
+						  ,CHANNELOWNER
+						  ,IDX
+						  ,CONTENT
+						  ,UPDATEDATE
+						  ,FEED_UPLOADPATH
+						  ,FEED_UUID
+						  ,FEED_FILENAME
+						  ,CH_UPLOADPATH
+						  ,CH_UUID
+						  ,CH_FILENAME 
+					  FROM
+						  (SELECT ROW_NUMBER() OVER(ORDER BY FE.UPDATEDATE DESC) RN
+						         ,F.CHANNELNAME
+								 ,C.CHANNELOWNER
+								 ,FE.IDX
+								 ,FE.CONTENT
+								 ,FE.UPDATEDATE
+								 ,A.UPLOADPATH   FEED_UPLOADPATH
+								 ,A.UUID         FEED_UUID
+								 ,A.FILENAME     FEED_FILENAME
+								 ,A2.UPLOADPATH  CH_UPLOADPATH
+								 ,A2.UUID        CH_UUID
+								 ,A2.FILENAME    CH_FILENAME
+						     FROM FOLLOW F
+					   INNER JOIN CHANNEL C 
+					           ON F.CHANNELNAME = C.CHANNELNAME
+					   INNER JOIN FEED FE 
+					           ON C.CHANNELOWNER = FE.WRITER
+				  LEFT OUTER JOIN ATTACH A 
+				               ON FE.IDX = A.FEED_IDX
+				  LEFT OUTER JOIN ATTACH A2 
+				               ON C.CHANNELNAME = A2.CHANNELNAME
+						    WHERE F.USERID= #{userId} 
+						      AND FE.UPDATEDATE > (SYSDATE - 7))
+					 WHERE RN BETWEEN (#{page}-1)*3+1 AND #{page}*3
+							 
+					 
+		]]>
+	</select>
+	
+	<select id="getNewFeedsCount" resultType="int">
+		<![CDATA[
+					SELECT COUNT(FE.IDX) COUNT
+				      FROM FOLLOW F
+				INNER JOIN CHANNEL C 
+				        ON F.CHANNELNAME = C.CHANNELNAME
+				INNER JOIN FEED FE 
+				        ON C.CHANNELOWNER = FE.WRITER
+				     WHERE F.USERID = #{userId} 
+				       AND FE.UPDATEDATE > (SYSDATE -7)
+		]]>
+	</select>
+	
+	<update id="updateLikeCount">
+		<![CDATA[
+					UPDATE
+		]]>
+				   <choose>
+				  	 <when test="type == 'freeBoard'.toString()">
+				   			FREE_BOARD
+				  	</when>
+				  	 <when test="type == 'feed'.toString()">
+				   			FEED
+				    </when>
+				  </choose>
+		<![CDATA[		  
+				  	   SET LIKES =
+		]]>		  	   
+				  <choose>
+				  	 <when test="plusMinus == 'plus'.toString()">
+				   			       (LIKES + 1),
+				   		   LIKEUSER = #{accessId}       
+				  	</when>
+				  	 <when test="plusMinus == 'minus'.toString()">
+				   				   (LIKES - 1),
+		   				   LIKEUSER = NULL
+				    </when>
+				  </choose>
+		<![CDATA[	   
+				  	 WHERE IDX = #{idx}		
+		]]>		  			
+	</update>
+
+</mapper>

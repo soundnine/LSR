@@ -1,0 +1,132 @@
+@charset "UTF-8";
+@import url("body-navbar.css");
+
+.main{
+	margin-top:10px;	
+}
+.small-logo {
+	border-radius: 10px;
+	margin: 5px 5px;
+}
+
+.profile {
+	width: 80%;
+	margin: 0 auto;
+}
+
+.image-box {
+	background: url('/resources/image/no-thumbnail-ch.jpg') no-repeat center center;
+	background-size: cover;
+	width: 100%;
+	position: relative;
+	padding-top: 25%;
+	overflow: hidden;
+	border-radius: 4px;
+}
+
+.profile-bottom {
+	margin-top: -45px;
+	background-color: white;
+	height: 110px;
+	border: solid 1px;
+	border-radius: 4px;
+	border-color: #D3D3D3;
+}
+
+.pseudo-profile-bottom {
+	height: 110px;
+	position: relative;
+	dispaly: inline-flex;
+}
+
+.profile-thumbnail {
+	background-color: white;
+	height: 75px;
+	width: 75px;
+	position: absolute;
+	left: 30px;
+	top: 10px;
+	border-radius: 50%;
+}
+
+.profile-thumbnail img {
+	height: 75px;
+	width: 75px;
+	border-radius: 50%;
+}
+
+.profile-name {
+	background-color: white;
+	height: 35px;
+	width: 100px;
+	position: absolute;
+	left: 107px;
+	top: 48px;
+	text-align: center;
+}
+
+.profile-name span {
+	display: inline-block;
+	margin-top: 7px;
+}
+
+.follow-btn {
+	height: 27px;
+	position: absolute;
+	right: 5px;
+	bottom: 9px;
+	background-color: white;
+	color: #337ab7;
+}
+
+.ch-board {
+	width: 80%;
+	margin: 10px auto;
+	background-color: white;
+	padding: 16px;
+	border: solid 1px;
+	border-color: #D3D3D3;
+}
+
+.ch-board-writer {
+	margin: 4px;
+}
+
+.ch-board-writer img {
+	width: 30px;
+	height: 30px;
+}
+
+.ch-board-writer span {
+	width: 30px;
+	height: 30px;
+	margin: 0 10px;
+}
+
+.ch-board-content {
+	margin: 4px;
+}
+
+.like-check{
+	color:blue;
+}
+
+.ch-board-reply {
+	margin: 4px;
+}
+
+.ch-board-reply i {
+	margin-left: 3px;
+	margin-right: 3px;
+}
+
+.info li {
+	display: inline-block;
+	list-style: none;
+	height: 50px;
+	color: #C0C0C0;
+}
+
+hr {
+	border-top: 3px double #bbb;
+}

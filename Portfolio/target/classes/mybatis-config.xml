@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+  
+<configuration>
+  <settings>
+  	<setting name="jdbcTypeForNull" value="NULL"/>
+  	<setting name="mapUnderscoreToCamelCase" value="true"/>
+  </settings>
+  
+  
+  <typeAliases>
+  	<typeAlias alias="AuthVO" type="com.portfolio.domain.AuthVO"/>
+  	<typeAlias alias="ChannelVO" type="com.portfolio.domain.ChannelVO"/>
+  	<typeAlias alias="AttachVO" type="com.portfolio.domain.AttachVO"/>
+  	<typeAlias alias="ReplyVO" type="com.portfolio.domain.ReplyVO"/>
+  	<typeAlias alias="FeedVO" type="com.portfolio.domain.FeedVO"/>
+  	<typeAlias alias="FollowVO" type="com.portfolio.domain.FollowVO"/>
+  	<typeAlias alias="FreeBoardVO" type="com.portfolio.domain.FreeBoardVO" />
+  	<typeAlias alias="UsersVO" type="com.portfolio.domain.UsersVO"/>
+  	<typeAlias alias="LoginVO" type="com.portfolio.domain.LoginVO"/>
+  </typeAliases>
+  
+  <environments default="development">
+    <environment id="development">
+      <transactionManager type="JDBC"/>
+      <dataSource type="POOLED">
+        <property name="driver" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/>
+        <property name="url" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:XE"/>
+        <property name="username" value="firstuser"/>
+        <property name="password" value="admin"/>
+      </dataSource>
+    </environment>
+  </environments>
+  
+  
+  <mappers>
+    <mapper resource="com/portfolio/persistence/IFreeMapper.xml"/>
+    <mapper resource="com/portfolio/persistence/IReplyMapper.xml"/>
+    <mapper resource="com/portfolio/persistence/IAttachMapper.xml"/>
+    <mapper resource="com/portfolio/persistence/IUserMapper.xml"/>
+    <mapper resource="com/portfolio/persistence/ICommonMapper.xml"/>
+    <mapper resource="com/portfolio/persistence/IChannelMapper.xml"/>
+  </mappers> 
+
+  </configuration>
